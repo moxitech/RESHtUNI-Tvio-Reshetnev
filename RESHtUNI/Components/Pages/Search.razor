@@ -1,0 +1,74 @@
+@page "/search"
+@using Domain.WebTypes
+@inject IOnlineCheckService NetworkChecker
+@inject ISearchGroupService SearchService
+@if (IsConnected){
+    <p class="link-info" >Подключено к интернету</p>
+}
+else{
+    <p class="link-warning">Не подключен интернет</p>
+}
+
+<h1 class="text-center">Поиск по имени группы</h1>
+@* <p role="status" >Выбранная группа: @currentText</p> *@
+<div class="d-flex justify-content-center align-content-center ">
+<input type="search" @oninput="SetText" value="@currentText"/>
+<button class="btn btn-primary">Поиск</button>
+@if (VisibleVariant)
+{
+    <ul class="dropdown-menu m-5" role="listbox" style="display: block;">
+        @foreach (var group in Groups)
+        {
+            <li>
+                <a class="dropdown-item" href="timetable/@group.Name/@group.Id" role="option">@group.Name</a>
+            </li>
+        }
+    </ul>
+}
+</div>
+@code {
+    private string currentText { get; set; } = "";
+    private bool VisibleVariant { get; set; } = false;
+    private bool IsConnected { get; set; } = false;
+    private List<GroupResponse> Groups = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsConnected = await NetworkChecker.CheckOnlineStatus();
+    }
+
+    private void Simulate__GenerateSymbolickVariant(string value){
+        // var selected = Strings
+    }
+
+
+    private void SetText(ChangeEventArgs e)
+    {
+        currentText = (string)e.Value;
+
+
+        if (!string.IsNullOrEmpty(currentText)){
+            if (currentText.Length > 2)
+            {
+                GetGroups();
+                SetVisible(true);
+            }
+        }
+        else
+        {
+            SetVisible(false);
+        }
+    }
+
+    private void SetVisible(bool visible){
+        VisibleVariant = visible;
+    }
+
+    private async void GetGroups()
+    {
+        Groups = await SearchService.GetFullGroupNameFromServer(currentText);
+    }
+
+
+}

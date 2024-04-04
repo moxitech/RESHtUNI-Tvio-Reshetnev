@@ -1,0 +1,41 @@
+﻿@page "/"
+@if (progressval == 100)
+{
+    <h1>Добро пожаловать!</h1>
+    <p>Начните с поиска расписания для своей группы: </p>
+    <p>Добавьте группу в избранные и они появяться здесь</p>
+    <p>Настройте приложение под себя</p>
+}
+<body class="p-3 m-0 border-0 bd-example m-0 border-0">
+    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: @progressval%"></div>
+    </div>
+</body>
+
+@code{
+    private int progressval = 0;
+    private System.Timers.Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Создаем и настраиваем таймер
+        timer = new System.Timers.Timer(3);
+        timer.Elapsed += async (sender, e) => await IncrementProgressValue();
+        timer.AutoReset = true;
+        timer.Start();
+    }
+
+    private async Task IncrementProgressValue()
+    {
+        if (progressval < 100)
+        {
+            progressval++;
+            await InvokeAsync(StateHasChanged); // Обновляем UI
+        }
+        else
+        {
+            timer.Stop(); // Останавливаем таймер, когда достигнуто значение 100
+        }
+    }
+    
+}

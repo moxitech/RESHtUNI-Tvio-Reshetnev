@@ -1,0 +1,82 @@
+@page "/timetable/{name}/{id}"
+@using Domain
+@using RESHtUNI.Data
+@inject ITimeTableService TimetableService
+<div>
+    <h2>Расписание @Name </h2>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="@GetStyleForTab(1)" aria-current="page" onclick="@(() => { ChangeActiveWeek(1); })">1 неделя</a>
+        </li>
+        <li class="nav-item">
+            <a class="@GetStyleForTab(2)" onclick="@(() => { ChangeActiveWeek(2); })">2 неделя</a>
+        </li>
+    </ul>
+
+    <div style="padding-top: 1rem;">
+        @* Один день с занятиями *@
+        @if (timeTable == null)
+        {
+            <p>Раписание подгружается..</p>
+        }
+        else
+        {
+            <p>Время обновления расписания: @timeTable.Date</p>
+            <div class="week-body">
+                @foreach (var day in timeTable.GetWeek(activeWeek).Days)
+                {
+                    <div class="card text-bg-primary mb-3 w-100" >
+                        <div class="card-header">@day.DayName</div>
+                        @foreach (var lesson in day.Lessons)
+                        {
+                            <div class="card-body">
+                                <h5 class="card-title">@lesson.Time</h5>
+                                <p class="card-text">@lesson.Name <br/> @lesson.Teacher <br/> @lesson.Auditorium </p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+</div>
+</div>
+
+@code {
+    [Parameter]
+    public string Name { get; set; } = "";
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    private GroupTimeTable timeTable { get; set; }
+    private int activeWeek = 1;
+
+    private async Task GetTimeTable()
+    {
+        timeTable = await TimetableService.GetTimeTableByGroup(Name, Id);
+    }
+
+    private void ChangeActiveWeek(int n)
+    {
+        activeWeek = n;
+    }
+
+    private string GetStyleForTab(int n)
+    {
+        if (activeWeek == 1 && n == 1)
+        {
+            return "nav-link active";
+        }
+        if (activeWeek == 2 && n == 2)
+        {
+            return "nav-link active";
+        }
+        return "nav-link";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetTimeTable();
+    }
+}
