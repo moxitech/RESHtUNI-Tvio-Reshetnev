@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain
 {
     public class Day
     {
-        [Key]
-        public int Id { get; set; }
         public string DayName { get; set; }
-        public List<Lesson> Lessons { get;set; }
+
+        public Week Week { get; set; }
+
+        public List<Lesson> Lessons { get; set; }
     }
 }

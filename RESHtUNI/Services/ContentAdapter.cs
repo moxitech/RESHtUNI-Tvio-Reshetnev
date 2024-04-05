@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,11 @@ namespace RESHtUNI.Services
         /// <summary>
         /// Обращаемся к базе, и смотрим сохраненные данные
         /// </summary>
-        public void TryGetOfflineData()
+        public async Task<GroupTimeTable?> TryGetTimetableFromDB(string groupName)
         {
-
+            return null;
         }
-        
+
         /// <summary>
         /// Обращаемся к сети, в случае отсутствия данных или очистки базы
         /// </summary>
